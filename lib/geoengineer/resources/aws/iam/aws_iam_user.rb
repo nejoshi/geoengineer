@@ -18,7 +18,14 @@ class GeoEngineer::Resources::AwsIamUser < GeoEngineer::Resource
     tfstate[:primary][:attributes] = {
       'name' => name,
       'force_destroy' => (force_destroy || 'false')
+
     }
+
+    permissions_boundary_arn = NullObject.maybe(remote_resource).permissions_boundary_arn
+    tfstate[:primary][:attributes].tap do |attributes|
+      attributes['permissions_boundary'] = permissions_boundary_arn if permissions_boundary_arn
+    end
+
     tfstate
   end
 
@@ -35,7 +42,8 @@ class GeoEngineer::Resources::AwsIamUser < GeoEngineer::Resource
       {
         _terraform_id: user[:user_name],
         _geo_id: user[:user_name],
-        name: user[:user_name]
+        name: user[:user_name],
+        permissions_boundary_arn: user.dig(:permissions_boundary, :permissions_boundary_arn)
       }
     end
   end

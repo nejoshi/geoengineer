@@ -18,7 +18,10 @@ describe(GeoEngineer::Resources::AwsIamUser) do
               user_id: 'ANTIPASTAAC2ZFSLA',
               arn: 'arn:aws:iam::123456789012:user/FakeUser',
               path: '/',
-              create_date: Time.parse('2016-03-23 16:33:32 UTC')
+              create_date: Time.parse('2016-03-23 16:33:32 UTC'),
+              permissions_boundary: {
+                  permissions_boundary_arn: "arn:aws:iam:123456789123:role/permission-boundary"
+              }
             },
             {
               user_name: 'FakeUser',
@@ -32,6 +35,9 @@ describe(GeoEngineer::Resources::AwsIamUser) do
       )
       remote_resources = GeoEngineer::Resources::AwsIamUser._fetch_remote_resources(nil)
       expect(remote_resources.length).to eq 2
+
+      first_user = remote_resources.first
+      expect(first_user[:permissions_boundary_arn]).to eql('arn:aws:iam:123456789123:role/permission-boundary')
     end
   end
 end

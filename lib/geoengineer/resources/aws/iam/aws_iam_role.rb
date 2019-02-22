@@ -16,11 +16,15 @@ class GeoEngineer::Resources::AwsIamRole < GeoEngineer::Resource
 
     arn = NullObject.maybe(remote_resource).arn
     assume_role_policy = NullObject.maybe(remote_resource).assume_role_policy
+    permissions_boundary_arn = NullObject.maybe(remote_resource).permissions_boundary_arn
 
     attributes = {}
     attributes['arn'] = arn if arn
     attributes['force_detach_policies'] = force_detach_policies || 'false'
     attributes['assume_role_policy'] = _normalize_json(assume_role_policy) if assume_role_policy
+
+    # in the terraform AWS provider, the field is called permissions_boundary
+    attributes['permissions_boundary'] = permissions_boundary_arn if permissions_boundary_arn
 
     tfstate[:primary][:attributes] = attributes
     tfstate
@@ -37,7 +41,9 @@ class GeoEngineer::Resources::AwsIamRole < GeoEngineer::Resource
       r.merge({ name: r[:role_name],
                 _geo_id: r[:role_name],
                 _terraform_id: r[:role_name],
-                assume_role_policy: URI.decode(r[:assume_role_policy_document]) })
+                assume_role_policy: URI.decode(r[:assume_role_policy_document]),
+                # in the AWS SDK, the permissions_boundary_arn is embedded in an object called permissions_boundary
+                permissions_boundary_arn: r.dig(:permissions_boundary, :permissions_boundary_arn)})
     end
   end
 

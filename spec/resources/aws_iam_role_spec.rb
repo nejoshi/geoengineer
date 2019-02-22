@@ -18,7 +18,10 @@ describe GeoEngineer::Resources::AwsIamRole do
               path: "/",
               role_id: "XXXXXXXXXXXXXXXXXXXXY",
               create_date: Time.parse("2016-12-13 01:00:06 UTC"),
-              assume_role_policy_document: ""
+              assume_role_policy_document: "",
+              permissions_boundary: {
+                permissions_boundary_arn: "arn:aws:iam:123456789123:role/permission-boundary"
+              }
             },
             {
               role_name: 'Another-IAM-role',
@@ -42,6 +45,7 @@ describe GeoEngineer::Resources::AwsIamRole do
       expect(test_role[:_terraform_id]).to eql('Some-IAM-role')
       expect(test_role[:_geo_id]).to eql('Some-IAM-role')
       expect(test_role[:name]).to eql('Some-IAM-role')
+      expect(test_role[:permissions_boundary_arn]).to eql('arn:aws:iam:123456789123:role/permission-boundary')
     end
   end
 end
